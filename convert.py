@@ -29,7 +29,7 @@ class Module:
 def parse_file(path: Path) -> Module:
     mod_name: str = path.parent if path.name == "mod.rs" else path.name.removesuffix(".rs")
     str_data: str = path.open("r").read()
-    regex: re.Pattern[str] = re.compile(r"pub fn\s+([\w_]+)\s*(\([^)]*\))\s*(?:->\s*([\w_:<>\[\](), &']+))?", re.DOTALL|re.MULTILINE)
+    regex: re.Pattern[str] = re.compile(r"pub fn\s+([\w_]+)\s*(\(.*?\))\s*(?:->\s*([\w_:<>\[\](), &']+))?\s+?{", re.DOTALL|re.MULTILINE)
     functions = [Function(*fn.groups()) for fn in regex.finditer(str_data)]
     return Module(mod_name, functions)
 
