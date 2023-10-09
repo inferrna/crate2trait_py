@@ -27,9 +27,10 @@ class Module:
 
 
 def parse_file(path: Path) -> Module:
+    print(f"Parsing {path}")
     mod_name: str = path.parent if path.name == "mod.rs" else path.name.removesuffix(".rs")
     str_data: str = path.open("r").read()
-    regex: re.Pattern[str] = re.compile(r"pub fn\s+([\w_]+)\s*(\(.*?\))\s*(?:->\s*([\w_:<>\[\](), &']+))?\s+?{", re.DOTALL|re.MULTILINE)
+    regex: re.Pattern[str] = re.compile(r"pub\s+(?:async )?fn\s+([\w_]+(?:<\w+>)?)\s*(\(.*?\))\s*(?:->\s*([\w_:<>(\[\]), &']+))?\s*[{,where]", re.DOTALL|re.MULTILINE)
     functions = [Function(*fn.groups()) for fn in regex.finditer(str_data)]
     return Module(mod_name, functions)
 
@@ -38,7 +39,7 @@ if __name__ == "__main__":
     dirname = sys.argv[1]
     traitname = sys.argv[2]
 
-    modules = [parse_file(Path(filename)) for filename in glob.glob(f"{dirname}/src/**.rs")]
+    modules = [parse_file(Path(filename)) for filename in glob.glob(f"{dirname}/src/**/*.rs", recursive=True)]
     trait = ["pub trait "+traitname+" {"]
     for m in modules:
         for f in m.functions:
