@@ -61,7 +61,7 @@ def gen_traits(name: str, modules: list[Module], is_async: bool):
             call_params = f"({','.join(param_names)})"
             impl.append(f"    {async_pref}fn {f.name}{f.parameters}{rettype}")
             impl.append("    {")
-            impl.append(f"        {prefix}{f.name}{call_params}{await_suff}")
+            impl.append(f"        {prefix}{f.name.replace('<', '::<')}{call_params}{await_suff}")
             impl.append("    }")
     impl.append("}")
 
